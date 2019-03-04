@@ -7,7 +7,15 @@ add_definitions(-std=c++11)
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
-set(sources src/main.cpp)
+set(sources
+    src/main.cpp
+    src/Coordinate2D.cpp
+    src/Coordinate2D.hpp
+    src/Coordinates2D.cpp
+    src/Coordinates2D.hpp
+    src/Trajectory.cpp
+    src/Trajectory.hpp
+    )
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
@@ -20,6 +28,7 @@ link_directories(/usr/local/Cellar/libuv/1.11.0/lib)
 
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
 
+link_directories(/usr/local/lib/uWS)
 
 add_executable(path_planning ${sources})
 
