@@ -9,12 +9,19 @@ set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
 set(sources
     src/main.cpp
+    src/CarState.cpp
+    src/CarState.hpp
     src/Coordinate2D.cpp
     src/Coordinate2D.hpp
     src/Coordinates2D.cpp
     src/Coordinates2D.hpp
+    src/Lane.cpp
+    src/Lane.hpp
+    src/Track.cpp
+    src/Track.hpp
     src/Trajectory.cpp
     src/Trajectory.hpp
+    src/Spline/spline.h
     )
 
 

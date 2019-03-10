@@ -72,8 +72,14 @@ int main() {
                // j[1] is the data JSON object
 
                // Main car's localization Data
-               Coordinate2D carXY(j[1]["x"], j[1]["y"]);
-               Coordinate2D carSD(j[1]["s"], j[1]["d"]);
+               CarState carState(
+                     j[1]["x"],
+                     j[1]["y"],
+                     j[1]["s"],
+                     j[1]["d"],
+                     deg2rad(j[1]["yaw"]),
+                     j[1]["speed"]);
+
                double car_s = j[1]["s"];
                double car_d = j[1]["d"];
                double car_yaw = j[1]["yaw"];
@@ -92,8 +98,11 @@ int main() {
 
                json msgJson;
 
+               const double laneWidth = 4.0;
+               CarState desiredCarState(laneWidth, 4, 90, 49.0, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+
                Trajectory trajectory;
-               trajectory.straight(carXY);
+               trajectory.calculate(carState, desiredCarState);
                /**
                 * TODO: define a path made up of (x,y) points that the car will visit
                 *   sequentially every .02 seconds

@@ -2,6 +2,7 @@
 #define COORDINATE2D_HPP
 
 #include <math.h>
+#include <vector>
 
 class Coordinate2D
 {
@@ -31,6 +32,54 @@ public:
       const double x = m_x + distance * cos(rotateInRad);
       const double y = m_y + distance * sin(rotateInRad);
       return Coordinate2D(x, y);
+   }
+
+   void transformToCoordinateSystem(const Coordinate2D  & referenceCoordinates, const double referenceYaw)
+   {
+      const double shiftX = m_x - referenceCoordinates.m_x;
+      const double shiftY = m_y - referenceCoordinates.m_y;
+
+      const double cosRefYaw = cos(-referenceYaw);
+      const double sinRefYaw = sin(-referenceYaw);
+
+      m_x = shiftX * cosRefYaw - shiftY * sinRefYaw;
+      m_y = shiftX * sinRefYaw + shiftY * cosRefYaw;
+   }
+
+   // Calculate distance between two points
+   double distance(const Coordinate2D & otherCoordinate) const
+   {
+      const double x2 = otherCoordinate.m_x;
+      const double y2 = otherCoordinate.m_y;
+      const double x1 = m_x;
+      const double y1 = m_y;
+      return sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+   }
+
+   double heading(const Coordinate2D & otherCoordinate) const
+   {
+      const double x1 = m_x;
+      const double y1 = m_y;
+      const double x2 = otherCoordinate.m_x;
+      const double y2 = otherCoordinate.m_y;
+      const double heading = atan2((y1-y2),(x1-x2));
+      return heading;
+   }
+
+   Coordinate2D operator-(const Coordinate2D & rhs) const
+   {
+      return Coordinate2D(m_x - rhs.m_x, m_y - rhs.m_y);
+   }
+
+   // projection this onto n
+   Coordinate2D projection(const Coordinate2D & n) const
+   {
+      const double x_x = m_x;
+      const double x_y = m_y;
+      const double n_x = n.m_x;
+      const double n_y = n.m_y;
+      const double proj_norm = (x_x * n_x + x_y * n_y) / (n_x * n_x + n_y * n_y);
+      return Coordinate2D(proj_norm * n_x, proj_norm * n_y);
    }
 
 private:
