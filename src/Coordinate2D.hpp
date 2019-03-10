@@ -71,6 +71,11 @@ public:
       return Coordinate2D(m_x - rhs.m_x, m_y - rhs.m_y);
    }
 
+   Coordinate2D operator+(const Coordinate2D & rhs) const
+   {
+      return Coordinate2D(m_x + rhs.m_x, m_y + rhs.m_y);
+   }
+
    // projection this onto n
    Coordinate2D projection(const Coordinate2D & n) const
    {

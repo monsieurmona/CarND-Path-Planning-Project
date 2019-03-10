@@ -58,20 +58,22 @@ Coordinate2D Track::convertToSDtoXY(const Coordinate2D & sdCoordinate) const
    const size_t wp2 = static_cast<size_t>((prev_wp_signed+1)%length_map_x);
    const size_t prev_wp = static_cast<size_t>(prev_wp_signed);
 
-   const double heading = atan2((m_maps_y[wp2] - m_maps_y[prev_wp]),
-                                (m_maps_x[wp2] - m_maps_x[prev_wp]));
+   const Coordinate2D prevWpCoordinate(m_maps_x[prev_wp], m_maps_y[prev_wp]);
+   const Coordinate2D wp2Coordinate(m_maps_x[wp2], m_maps_y[wp2]);
+   const double heading = wp2Coordinate.heading(prevWpCoordinate);
+
    // the x,y,s along the segment
    const double seg_s = (s - m_maps_s[prev_wp]);
 
-   const double seg_x = m_maps_x[prev_wp] + seg_s * cos(heading);
-   const double seg_y = m_maps_y[prev_wp] + seg_s * sin(heading);
+   const Coordinate2D segVectorPart(seg_s * cos(heading), seg_s * sin(heading));
+   const Coordinate2D seg = prevWpCoordinate + segVectorPart;
 
-   const double perp_heading = heading-M_PI/2;
+   const double perp_heading = heading - M_PI / 2;
 
-   const double x = seg_x + d*cos(perp_heading);
-   const double y = seg_y + d*sin(perp_heading);
+   const Coordinate2D dVector(d * cos(perp_heading), d * sin(perp_heading));
+   const Coordinate2D xyCoordinate = seg + dVector;
 
-   return {x,y};
+   return xyCoordinate;
 }
 
 Coordinate2D Track::convertXYtoSD(const Coordinate2D &xyCoordinate, const double theta) const
