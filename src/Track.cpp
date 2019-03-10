@@ -26,7 +26,7 @@ size_t Track::getNextWaypoint(const Coordinate2D & xyCoordinate, const double th
    const Coordinate2D mapCoordinate(m_maps_x[closestWaypoint], m_maps_y[closestWaypoint]);
    const double heading = mapCoordinate.heading(xyCoordinate);
 
-   double angle = fabs(theta-heading);
+   double angle = fabs(theta - heading);
    angle = std::min(2 * M_PI - angle, angle);
    const size_t mapXSize = m_maps_x.size();
 
@@ -114,8 +114,7 @@ Coordinate2D Track::convertXYtoSD(const Coordinate2D &xyCoordinate, const double
       frenet_s += current.distance(next);
    }
 
-   const Coordinate2D nullCoordinate(0,0);
-   frenet_s += nullCoordinate.distance(projection);
+   frenet_s += projection.distance();
 
    return {frenet_s,frenet_d};
 }

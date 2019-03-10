@@ -29,9 +29,17 @@ public:
       m_carPositionXY = track.convertToSDtoXY(m_carPositionSD);
    }
 
+   double getSpeedInMetersPerSecond() const { return m_speedInMps; }
+   double getSpeedInMilesPerHour() const { return m_speedInMps * 2.23694; }
+
+   static double convertMetersPerSecondToMilesPerHour(const double mps) { return mps * 0.44704; }
+   static double convertMilesPerHourToMetersPerSecond(const double mph) { return mph * 2.23694; }
+
    Coordinate2D m_carPositionXY;
    Coordinate2D m_carPositionSD;
    double m_yawInRad;
+
+private:
    double m_speedInMps;
 };
 

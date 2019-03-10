@@ -46,6 +46,21 @@ public:
       m_y = shiftX * sinRefYaw + shiftY * cosRefYaw;
    }
 
+   void inverseTransformToCoordinateSystem(const Coordinate2D & referenceCoordinates, const double referenceYaw)
+   {
+      const double shiftX = m_x;
+      const double shiftY = m_y;
+
+      const double cosRefYaw = cos(referenceYaw);
+      const double sinRefYaw = sin(referenceYaw);
+
+      m_x = shiftX * cosRefYaw - shiftY * sinRefYaw;
+      m_y = shiftX * sinRefYaw + shiftY * cosRefYaw;
+
+      m_x += referenceCoordinates.m_x;
+      m_y += referenceCoordinates.m_y;
+   }
+
    // Calculate distance between two points
    double distance(const Coordinate2D & otherCoordinate) const
    {
@@ -54,6 +69,14 @@ public:
       const double x1 = m_x;
       const double y1 = m_y;
       return sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+   }
+
+   // Calculate distance to a point
+   double distance() const
+   {
+      const double x1 = m_x;
+      const double y1 = m_y;
+      return sqrt((x1 * x1) + (y1 * y1));
    }
 
    double heading(const Coordinate2D & otherCoordinate) const

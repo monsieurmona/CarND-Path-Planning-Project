@@ -1,7 +1,9 @@
 #ifndef COORDINATES2D_HPP
 #define COORDINATES2D_HPP
 
+#include <algorithm>
 #include <array>
+#include <cassert>
 #include <limits>
 #include <vector>
 
@@ -27,34 +29,20 @@ public:
       m_y.resize(N);
    }
 
-   void simpleTrajectory(Coordinate2D position, const double interval, const double rotationInRad)
-   {
-
-      for (size_t i = m_length; i < N; ++i)
-      {
-         const Coordinate2D nextCoordinate = position.move(interval, rotationInRad + (i + 1) * (M_PI / (N * 2)));
-         m_x[i] = nextCoordinate.getX();
-         m_y[i] = nextCoordinate.getY();
-         position = nextCoordinate;
-      }
-
-      m_length = N;
-   }
-
-   void insert(const std::vector<double> & xCoordinates, const std::vector<double> & yCoordinates)
+   void insertPath(const Axis & xCoordinates, const Axis & yCoordinates)
    {
       m_length = 0;
 
       size_t maxLength = xCoordinates.size() < N ? xCoordinates.size() : N;
       maxLength = yCoordinates.size() < maxLength ? yCoordinates.size() : maxLength;
 
-      std::copy(m_x, xCoordinates.begin(), xCoordinates.begin() + maxLength);
-      std::copy(m_y, yCoordinates.begin(), yCoordinates.begin() + maxLength);
+      std::copy_n(xCoordinates.begin(), maxLength, m_x.begin());
+      std::copy_n(yCoordinates.begin(), maxLength, m_y.begin());
 
       m_length = maxLength;
    }
 
-   size_t getLength() const { return m_length; }
+   inline size_t getLength() const { return m_length; }
 
    Coordinate2D getLast() const
    {
@@ -69,12 +57,12 @@ public:
       }
    }
 
-   Coordinate2D operator[](const size_t i) const
+   inline Coordinate2D operator[](const size_t i) const
    {
       return Coordinate2D(m_x[i], m_y[i]);
    }
 
-   Coordinate2D at(const size_t i) const
+   inline Coordinate2D at(const size_t i) const
    {
       return Coordinate2D(m_x[i], m_y[i]);
    }
@@ -87,7 +75,7 @@ public:
 
    void push_back(const Coordinate2D & coordinate2D)
    {
-      assert(m_length < N);
+      assert(m_length < getMax());
       m_x[m_length] = coordinate2D.getX();
       m_y[m_length] = coordinate2D.getY();
       m_length++;
@@ -121,11 +109,13 @@ public:
       }
    }
 
-   const Axis & getX() const {return m_x;}
-   const Axis & getY() const {return m_y;}
+   inline size_t getMax() const { return N; }
 
-   const Axis & getS() const {return m_x;}
-   const Axis & getD() const {return m_y;}
+   inline const Axis & getX() const {return m_x;}
+   inline const Axis & getY() const {return m_y;}
+
+   inline const Axis & getS() const {return m_x;}
+   inline const Axis & getD() const {return m_y;}
 private:
    Axis m_x; // respectivly s
    Axis m_y; // respectivly d
