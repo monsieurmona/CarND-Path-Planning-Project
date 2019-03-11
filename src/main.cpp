@@ -105,12 +105,13 @@ int main() {
                const double laneWidth = 4.0;
                CarState desiredCarState(
                         laneWidth,
-                        4,
-                        90,
+                        2,
+                        90 + carState.m_carPositionSD.getS(),
                         CarState::convertMilesPerHourToMetersPerSecond(49.0),
                         track);
 
                Trajectory trajectory;
+               trajectory.insertPreviousPath(previous_path_x, previous_path_y);
                trajectory.calculate(carState, desiredCarState, track, 0.02);
 
                /**

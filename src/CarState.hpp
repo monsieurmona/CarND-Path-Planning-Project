@@ -17,13 +17,12 @@ public:
 
    CarState(const double laneWidth,
             const int laneIndex,
-            const double distance,
+            const double s,
             const double desiredSpeedMps,
             const Track & track)
       : m_yawInRad(0.0)
       , m_speedInMps(desiredSpeedMps)
    {
-      const double s = distance;
       const double d = Lane(laneWidth).getD(laneIndex);
       m_carPositionSD.set(s, d);
       m_carPositionXY = track.convertToSDtoXY(m_carPositionSD);
@@ -32,8 +31,8 @@ public:
    double getSpeedInMetersPerSecond() const { return m_speedInMps; }
    double getSpeedInMilesPerHour() const { return m_speedInMps * 2.23694; }
 
-   static double convertMetersPerSecondToMilesPerHour(const double mps) { return mps * 0.44704; }
-   static double convertMilesPerHourToMetersPerSecond(const double mph) { return mph * 2.23694; }
+   static double convertMetersPerSecondToMilesPerHour(const double mps) { return mps * 2.23694; }
+   static double convertMilesPerHourToMetersPerSecond(const double mph) { return mph * 0.44704; }
 
    Coordinate2D m_carPositionXY;
    Coordinate2D m_carPositionSD;

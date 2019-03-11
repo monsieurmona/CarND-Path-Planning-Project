@@ -35,21 +35,23 @@ void Trajectory::calculate(const CarState & carState, const CarState & targetCar
    const Coordinate2D lastPositionSD = track.convertXYtoSD(lastPosition, angleInRad);
 
    // interpolate two S coordinates
-   const double sDistance = targetCarState.m_carPositionSD.getS() + carState.m_carPositionSD.getS() - lastPositionSD.getS();
+   const double sDistance = targetCarState.m_carPositionSD.getS() - lastPositionSD.getS();
    const double sSection = sDistance / 3.0;
    const double s1 = lastPositionSD.getS() + sSection;
    const double s2 = s1 + sSection;
    const double d = targetCarState.m_carPositionSD.getD();
 
-   const Coordinate2D nextWp1XY = track.convertToSDtoXY(Coordinate2D(s1, d));
-   const Coordinate2D nextWp2XY = track.convertToSDtoXY(Coordinate2D(s2, d));
+   const Coordinate2D nextWp3XY = track.convertToSDtoXY(Coordinate2D(s1, d));
+   const Coordinate2D nextWp4XY = track.convertToSDtoXY(Coordinate2D(s2, d));
 
-   m_wayPoints.push_back(nextWp1XY);
-   m_wayPoints.push_back(nextWp2XY);
-   m_wayPoints.push_back(targetCarState.m_carPositionXY + carState.m_carPositionXY);
+   m_wayPoints.push_back(nextWp3XY);
+   m_wayPoints.push_back(nextWp4XY);
+   const Coordinate2D & nextWp5XY = targetCarState.m_carPositionXY;
+   m_wayPoints.push_back(nextWp5XY);
 
    // convert to ego coordinates
    m_wayPoints.transformToCoordinateSystem(carState.m_carPositionXY, carState.m_yawInRad);
+   double x0 = m_wayPoints.getX()[1];
 
    spline.set_points(m_wayPoints.getX(), m_wayPoints.getY());
 
@@ -61,7 +63,7 @@ void Trajectory::calculate(const CarState & carState, const CarState & targetCar
    const Coordinate2D horizon(horizonX, spline(horizonX));
    const double horizonDistance = horizon.distance();
    const size_t remainingPoints = m_pathPoints.getMax() - m_pathPoints.getLength();
-   double xAddOn = 0.0;
+   double xAddOn = x0;
 
    // fill up the remaining points
    for (size_t i = 0; i < remainingPoints; ++i)
