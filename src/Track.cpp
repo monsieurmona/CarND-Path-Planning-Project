@@ -24,7 +24,7 @@ size_t Track::getNextWaypoint(const Coordinate2D & xyCoordinate, const double th
 {
    size_t closestWaypoint = getClosestWaypoint(xyCoordinate);
    const Coordinate2D mapCoordinate(m_maps_x[closestWaypoint], m_maps_y[closestWaypoint]);
-   const double heading = mapCoordinate.heading(xyCoordinate);
+   const double heading = mapCoordinate.headingFrom(xyCoordinate);
 
    double angle = fabs(theta - heading);
    angle = std::min(2 * M_PI - angle, angle);
@@ -60,7 +60,7 @@ Coordinate2D Track::convertToSDtoXY(const Coordinate2D & sdCoordinate) const
 
    const Coordinate2D prevWpCoordinate(m_maps_x[prev_wp], m_maps_y[prev_wp]);
    const Coordinate2D wp2Coordinate(m_maps_x[wp2], m_maps_y[wp2]);
-   const double heading = wp2Coordinate.heading(prevWpCoordinate);
+   const double heading = wp2Coordinate.headingFrom(prevWpCoordinate);
 
    // the x,y,s along the segment
    const double seg_s = (s - m_maps_s[prev_wp]);

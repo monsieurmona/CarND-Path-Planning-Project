@@ -79,13 +79,31 @@ public:
       return sqrt((x1 * x1) + (y1 * y1));
    }
 
-   double heading(const Coordinate2D & otherCoordinate) const
+   double headingFrom(const Coordinate2D & otherCoordinate) const
    {
       const double x1 = m_x;
       const double y1 = m_y;
       const double x2 = otherCoordinate.m_x;
       const double y2 = otherCoordinate.m_y;
-      const double heading = atan2((y1-y2),(x1-x2));
+      const double heading = atan2((y1 - y2),(x1 - x2));
+      return heading;
+   }
+
+   double headingTo(const Coordinate2D & otherCoordinate) const
+   {
+      const double x1 = m_x;
+      const double y1 = m_y;
+      const double x2 = otherCoordinate.m_x;
+      const double y2 = otherCoordinate.m_y;
+      const double heading = atan2((y2 - y1),(x2 - x1));
+      return heading;
+   }
+
+   double heading() const
+   {
+      const double x1 = m_x;
+      const double y1 = m_y;
+      const double heading = atan2(y1,x1);
       return heading;
    }
 

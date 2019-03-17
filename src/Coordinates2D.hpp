@@ -109,6 +109,12 @@ public:
       }
    }
 
+   inline void limit(const size_t n) {
+      const size_t maxN = (n < N) ? n : N;
+      m_length = (maxN < m_length) ? maxN : m_length;
+   }
+
+   inline void clear() { m_length = 0; }
    inline size_t getMax() const { return N; }
 
    inline const Axis & getX() const {return m_x;}

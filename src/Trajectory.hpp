@@ -22,6 +22,7 @@ public:
    using PathPoints = Coordinates2D<NPathPoints>;
    using PathAxis = PathPoints::Axis;
    using WayPoints = Coordinates2D<NWayPoints>;
+   using SpeedPoints = Coordinates2D<NWayPoints>;
 
    Trajectory();
    ~Trajectory();
@@ -39,14 +40,20 @@ public:
    const PathAxis & getPathAxisY() const { return m_pathPoints.getY(); }
 
 private:
+   double getSpeed(const Coordinate2D & xyPos0,  const Coordinate2D & xyPos1, const Track &track, const double updateInterval);
+
    // points that describe a path
    PathPoints m_pathPoints;
 
    // way points where a path must lead through
    WayPoints m_wayPoints;
 
+   // Speed Ancor Points
+   SpeedPoints m_speedPoints;
+
    // Spline for this trajectory
-   std::unique_ptr<NONAME::tk::spline> m_splinePtr;
+   std::unique_ptr<NONAME::tk::spline> m_waySplinePtr;
+   std::unique_ptr<NONAME::tk::spline> m_speedSplinePtr;
    //NONAME::tk::spline * m_spline;
 
 };
