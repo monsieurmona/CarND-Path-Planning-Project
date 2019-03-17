@@ -15,15 +15,21 @@ public:
       , m_speedInMps(speedInMps)
    {}
 
-   CarState(const double laneWidth,
-            const int laneIndex,
+   CarState(const Coordinate2D & posXY, const Coordinate2D & posSD, const double yawInRad, const double speedInMps)
+      : m_carPositionXY(posXY)
+      , m_carPositionSD(posSD)
+      , m_yawInRad(yawInRad)
+      , m_speedInMps(speedInMps)
+   {}
+
+   CarState(const int laneIndex,
             const double s,
             const double desiredSpeedMps,
             const Track & track)
       : m_yawInRad(0.0)
       , m_speedInMps(desiredSpeedMps)
    {
-      const double d = Lane(laneWidth).getD(laneIndex);
+      const double d = track.getLane().getD(laneIndex);
       m_carPositionSD.set(s, d);
       m_carPositionXY = track.convertToSDtoXY(m_carPositionSD);
    }

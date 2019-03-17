@@ -7,7 +7,7 @@ class Lane
 public:
    Lane(double laneWidth) : m_laneWidth(laneWidth), m_halfLaneWidth(laneWidth / 2.0) {}
 
-   double getD(const int laneIdx)
+   double getD(const int laneIdx) const
    {
       return m_halfLaneWidth + laneIdx * m_laneWidth;
    }

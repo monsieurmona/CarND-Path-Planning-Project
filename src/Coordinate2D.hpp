@@ -117,6 +117,11 @@ public:
       return Coordinate2D(m_x + rhs.m_x, m_y + rhs.m_y);
    }
 
+   Coordinate2D operator*(const double scale) const
+   {
+      return Coordinate2D(m_x * scale, m_y  * scale);
+   }
+
    // projection this onto n
    Coordinate2D projection(const Coordinate2D & n) const
    {

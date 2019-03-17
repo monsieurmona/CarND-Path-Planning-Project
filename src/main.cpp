@@ -9,6 +9,7 @@
 #include "json.hpp"
 
 #include "Trajectory.hpp"
+#include "Environment.hpp"
 
 // for convenience
 using nlohmann::json;
@@ -100,11 +101,16 @@ int main() {
 
                json msgJson;
 
-               Track track(map_waypoints_s, map_waypoints_x, map_waypoints_y);
+               constexpr double updateInterval = 0.02;
+               constexpr double laneWidth = 4.0;
+               Lane lane(laneWidth);
+               Track track(lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 
-               const double laneWidth = 4.0;
+               Environment environment;
+               environment.setEnvironment(sensor_fusion);
+               environment.predict(track, 90.0, updateInterval);
+
                CarState desiredCarState(
-                        laneWidth,
                         2,
                         90 + carState.m_carPositionSD.getS(),
                         CarState::convertMilesPerHourToMetersPerSecond(49.0),
@@ -112,7 +118,7 @@ int main() {
 
                Trajectory trajectory;
                trajectory.insertPreviousPath(previous_path_x, previous_path_y);
-               trajectory.calculate(carState, desiredCarState, track, 0.02);
+               trajectory.calculate(carState, desiredCarState, track, updateInterval);
 
                /**
                 * TODO: define a path made up of (x,y) points that the car will visit

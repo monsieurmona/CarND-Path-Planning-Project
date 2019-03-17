@@ -11,7 +11,7 @@ Trajectory::Trajectory()
 
 Trajectory::~Trajectory() = default;
 
-void Trajectory::calculate(const CarState & carState, const CarState & targetCarState, const Track &track, const double updateInterval)
+const Trajectory::PathPoints & Trajectory::calculate(const CarState & carState, const CarState & targetCarState, const Track &track, const double updateInterval)
 {
    m_waySplinePtr.reset(new NONAME::tk::spline());
    m_speedSplinePtr.reset(new NONAME::tk::spline());
@@ -81,7 +81,6 @@ void Trajectory::calculate(const CarState & carState, const CarState & targetCar
    const Coordinate2D & nextWp5XY = targetCarState.m_carPositionXY;
    m_wayPoints.push_back(nextWp5XY);
 
-
    // convert to ego coordinates
    m_wayPoints.transformToCoordinateSystem(carState.m_carPositionXY, carState.m_yawInRad);
 
@@ -128,9 +127,6 @@ void Trajectory::calculate(const CarState & carState, const CarState & targetCar
    const double t3 = t2 + updateInterval;
    const double t4 = t3 + updateInterval;
 
-   std::cout << "t0:" << t0 << " t1:" << t1 << " t2:" << t2 << " t3:" << t3 << " t4:" << t4 << std::endl;
-   std::cout << "v0:" << speedInMps0 << " v1:" << speedInMps1 << " v2:" << targetSpeedInMps << std::endl;
-
    m_speedPoints.push_back(Coordinate2D(t0, speedInMps0      ));
    m_speedPoints.push_back(Coordinate2D(t1, speedInMps1      ));
    m_speedPoints.push_back(Coordinate2D(t2, targetSpeedInMps ));
@@ -139,7 +135,6 @@ void Trajectory::calculate(const CarState & carState, const CarState & targetCar
 
    Coordinate2D lastPathPoint = m_wayPoints[1];
    const Coordinate2D lastButOnePathPoint = m_wayPoints[0];
-   const double x0 = lastPathPoint.getX();
 
    waySpline.set_points(m_wayPoints.getX(), m_wayPoints.getY());
    speedSpline.set_points(m_speedPoints.getX(), m_speedPoints.getY());
@@ -149,7 +144,10 @@ void Trajectory::calculate(const CarState & carState, const CarState & targetCar
 
    double heading = lastButOnePathPoint.headingTo(lastPathPoint);
 
-
+   /*
+   const double x0 = lastPathPoint.getX();
+   std::cout << "t0:" << t0 << " t1:" << t1 << " t2:" << t2 << " t3:" << t3 << " t4:" << t4 << std::endl;
+   std::cout << "v0:" << speedInMps0 << " v1:" << speedInMps1 << " v2:" << targetSpeedInMps << std::endl;
    std::cout << "remaining Points:" << remainingPoints << " x0:" << x0 << " vLastInMps:" << speedInMps1 << " vTarget:" << targetSpeedInMps << " vDiff:" << speedOffsetInMps << " a:" << a << std::endl;
    std::stringstream speedLog;
    std::stringstream ratioLog;
@@ -157,6 +155,7 @@ void Trajectory::calculate(const CarState & carState, const CarState & targetCar
    std::stringstream headingLog;
 
    speedLog << " " << getSpeed(lastButOnePathPoint, lastPathPoint, track, updateInterval);
+   */
 
    for (size_t i = 0; i < remainingPoints; ++i)
    {
@@ -168,10 +167,12 @@ void Trajectory::calculate(const CarState & carState, const CarState & targetCar
       const double y = waySpline(x);
 
       Coordinate2D pathPoint(x,y);
+      /*
       speedLog << " " << getSpeed(lastPathPoint, pathPoint, track, updateInterval);
       ratioLog << " " << xRatio;
       desiredSpeedLog << " " << v;
       headingLog << " " << heading;
+      */
       heading = lastPathPoint.headingTo(pathPoint);
       lastPathPoint = pathPoint;
 
@@ -179,12 +180,15 @@ void Trajectory::calculate(const CarState & carState, const CarState & targetCar
       m_pathPoints.push_back(pathPoint);
    }
 
-   // std::cout << std::endl;
+   /*
    std::cout << "Speed:" << speedLog.str() << std::endl;
    std::cout << "Desired Speed:" << desiredSpeedLog.str() << std::endl;
    std::cout << "Ratio:" << ratioLog.str() << std::endl;
    std::cout << "Heading:" << headingLog.str() << std::endl;
    std::cout << std::endl;
+   */
+
+   return m_pathPoints;
 }
 
 double Trajectory::getSpeed(const Coordinate2D & xyPos0,  const Coordinate2D & xyPos1, const Track &track, const double updateInterval)

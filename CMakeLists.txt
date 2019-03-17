@@ -15,12 +15,20 @@ set(sources
     src/Coordinate2D.hpp
     src/Coordinates2D.cpp
     src/Coordinates2D.hpp
+    src/Environment.cpp
+    src/Environment.hpp
     src/Lane.cpp
     src/Lane.hpp
+    src/Prediction.cpp
+    src/Prediction.hpp
+    src/Predictions.cpp
+    src/Predictions.hpp
     src/Track.cpp
     src/Track.hpp
     src/Trajectory.cpp
     src/Trajectory.hpp
+    src/Vehicle.cpp
+    src/Vehicle.hpp
     src/Spline/spline.h
     )
 
