@@ -14,16 +14,6 @@ void Predictions::predict(const Track & track, const CarState & state, const dou
    m_predictions.push_back(std::move(predictionPtr));
 }
 
-double Predictions::calcSdYaw(const Track & track, const CarState & state) const
-{
-   const Coordinate2D delta(cos(state.m_yawInRad), sin(state.m_yawInRad));
-   const Coordinate2D nextPosXY = state.m_carPositionXY + delta;
-   const Coordinate2D nextPosSD = track.convertXYtoSD(nextPosXY, state.m_yawInRad);
-   const Coordinate2D diff = nextPosSD - state.m_carPositionSD;
-   const double sdYaw = atan2(diff.getD(), diff.getS());
-   return sdYaw;
-}
-
 CarState Predictions::getLinearPredictedCarState(const Track & track, const CarState & state, const double horizon)
 {
    const Coordinate2D delta(cos(state.m_yawInRad), sin(state.m_yawInRad));

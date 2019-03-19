@@ -11,14 +11,29 @@ Trajectory::Trajectory()
 
 Trajectory::~Trajectory() = default;
 
-const Trajectory::PathPoints & Trajectory::calculate(const CarState & carState, const CarState & targetCarState, const Track &track, const double updateInterval)
+const Trajectory::PathPoints & Trajectory::calculateLanePath(const CarState & carState, const CarState & targetCarState, const Track &track, const double updateInterval)
 {
+   m_pathPoints.limit(m_pathPoints.getMax() - m_pathPoints.getMax() / 3);
    m_waySplinePtr.reset(new NONAME::tk::spline());
    m_speedSplinePtr.reset(new NONAME::tk::spline());
+   const size_t nPreviousPathPoints = m_pathPoints.getLength();
+
+   // calculate remaining path points for the desired speed
+   const size_t remainingPoints = m_pathPoints.getMax() - m_pathPoints.getLength();
+
+   if (0.0001 > abs(carState.getSpeedInMetersPerSecond()) && 0.0001 > abs(targetCarState.getSpeedInMetersPerSecond()))
+   {
+      for (size_t i = 0; i < remainingPoints; ++i)
+      {
+         m_pathPoints.push_back(carState.m_carPositionXY);
+      }
+
+      return m_pathPoints;
+   }
+
    NONAME::tk::spline & waySpline = *m_waySplinePtr;
    NONAME::tk::spline & speedSpline = *m_speedSplinePtr;
-   m_pathPoints.limit(m_pathPoints.getMax() - m_pathPoints.getMax() / 3);
-   const size_t nPreviousPathPoints = m_pathPoints.getLength();
+
    m_wayPoints.clear();
    m_speedPoints.clear();
 
@@ -66,10 +81,13 @@ const Trajectory::PathPoints & Trajectory::calculate(const CarState & carState, 
    const Coordinate2D lastPositionSD = track.convertXYtoSD(lastPosition, angleInRad);
 
    // interpolate two S coordinates
-   const double sDistance = targetCarState.m_carPositionSD.getS() - lastPositionSD.getS();
+   const double sDistance = track.sDistance(
+            lastPositionSD.getS(),
+            targetCarState.m_carPositionSD.getS());
+
    const double sSection = sDistance / 3.0;
-   const double s1 = lastPositionSD.getS() + sSection;
-   const double s2 = s1 + sSection;
+   const double s1 = track.sNormalize(lastPositionSD.getS() + sSection);
+   const double s2 = track.sNormalize(s1 + sSection);
    const double d = targetCarState.m_carPositionSD.getD();
 
    const Coordinate2D nextWp3XY = track.convertToSDtoXY(Coordinate2D(s1, d));
@@ -139,8 +157,6 @@ const Trajectory::PathPoints & Trajectory::calculate(const CarState & carState, 
    waySpline.set_points(m_wayPoints.getX(), m_wayPoints.getY());
    speedSpline.set_points(m_speedPoints.getX(), m_speedPoints.getY());
 
-   // calculate remaining path points for the desired speed
-   const size_t remainingPoints = m_pathPoints.getMax() - m_pathPoints.getLength();
 
    double heading = lastButOnePathPoint.headingTo(lastPathPoint);
 
@@ -187,6 +203,37 @@ const Trajectory::PathPoints & Trajectory::calculate(const CarState & carState, 
    std::cout << "Heading:" << headingLog.str() << std::endl;
    std::cout << std::endl;
    */
+
+   return m_pathPoints;
+}
+
+const Trajectory::PathPoints & Trajectory::calculateLinearPath(const CarState & carState, const CarState & targetCarState, const Track & track, const double updateInterval)
+{
+   m_pathPoints.clear();
+   m_waySplinePtr.reset(nullptr);
+   m_speedSplinePtr.reset(nullptr);
+
+   if (0.0001 > abs(carState.getSpeedInMetersPerSecond()) && 0.0001 > abs(targetCarState.getSpeedInMetersPerSecond()))
+   {
+      for (size_t i = 0; i < m_pathPoints.getMax(); ++i)
+      {
+         m_pathPoints.push_back(carState.m_carPositionXY);
+      }
+
+      return m_pathPoints;
+   }
+
+   const double speedInMps = carState.getSpeedInMetersPerSecond();
+   const double intervallInM = speedInMps * updateInterval;
+
+   for (size_t i = 0; i < m_pathPoints.getMax(); ++i)
+   {
+      const double x = (i + 1) * intervallInM;
+      const double y = 0;
+      Coordinate2D pathPoint(x,y);
+      pathPoint.inverseTransformToCoordinateSystem(carState.m_carPositionXY, carState.m_yawInRad);
+      m_pathPoints.push_back(pathPoint);
+   }
 
    return m_pathPoints;
 }

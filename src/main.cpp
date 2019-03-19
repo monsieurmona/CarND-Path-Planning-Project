@@ -103,22 +103,23 @@ int main() {
 
                constexpr double updateInterval = 0.02;
                constexpr double laneWidth = 4.0;
+               constexpr double nLanes = 3;
                Lane lane(laneWidth);
                Track track(lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 
-               Environment environment;
+               Environment environment(nLanes, lane);
                environment.setEnvironment(sensor_fusion);
                environment.predict(track, 90.0, updateInterval);
 
                CarState desiredCarState(
-                        2,
+                        0,
                         90 + carState.m_carPositionSD.getS(),
                         CarState::convertMilesPerHourToMetersPerSecond(49.0),
                         track);
 
                Trajectory trajectory;
                trajectory.insertPreviousPath(previous_path_x, previous_path_y);
-               trajectory.calculate(carState, desiredCarState, track, updateInterval);
+               trajectory.calculateLanePath(carState, desiredCarState, track, updateInterval);
 
                /**
                 * TODO: define a path made up of (x,y) points that the car will visit

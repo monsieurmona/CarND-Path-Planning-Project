@@ -34,6 +34,17 @@ public:
       m_carPositionXY = track.convertToSDtoXY(m_carPositionSD);
    }
 
+   double calcSdYaw(const Track & track) const
+   {
+      const Coordinate2D delta(cos(m_yawInRad), sin(m_yawInRad));
+      const Coordinate2D nextPosXY = m_carPositionXY + delta;
+      const Coordinate2D nextPosSD = track.convertXYtoSD(nextPosXY, m_yawInRad);
+      const Coordinate2D diff = nextPosSD - m_carPositionSD;
+      const double sdYaw = atan2(diff.getD(), diff.getS());
+      return sdYaw;
+   }
+
+
    double getSpeedInMetersPerSecond() const { return m_speedInMps; }
    double getSpeedInMilesPerHour() const { return m_speedInMps * 2.23694; }
 

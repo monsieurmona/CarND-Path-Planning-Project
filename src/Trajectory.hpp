@@ -30,7 +30,8 @@ public:
    Trajectory(const Trajectory&&) = delete;
 
    // calculates spline and path points
-   const PathPoints & calculate(const CarState & carState, const CarState & targetCarState, const Track & track, const double updateInterval);
+   const PathPoints & calculateLanePath(const CarState & carState, const CarState & targetCarState, const Track & track, const double updateInterval);
+   const PathPoints & calculateLinearPath(const CarState & carState, const CarState & targetCarState, const Track & track, const double updateInterval);
 
    // set previous path points before calculation
    void insertPreviousPath(const std::vector<double> & xCoordinates, const std::vector<double> & yCoordinates)

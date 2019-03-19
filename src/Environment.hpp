@@ -9,13 +9,16 @@
 class Environment
 {
 public:
-   Environment() {}
+   Environment(int nLanes, const Lane & lane ) : m_nLanes{nLanes}, m_lane{lane} {}
 
    void setEnvironment(const std::vector<std::vector<double>> & sensorFusion);
    void predict(const Track & track, const double_t horizon, const double updateInterval);
 
 private:
    inline void addVehicle(const int id, const CarState & carState) { m_vehicles.emplace_back(Vehicle(id, carState)); }
+   int m_nLanes;
+   Lane m_lane;
+
    std::vector<Vehicle> m_vehicles;
 };
 

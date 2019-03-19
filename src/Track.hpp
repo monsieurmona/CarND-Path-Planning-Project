@@ -23,7 +23,44 @@ public:
    int getSLength() const { return static_cast<int>(m_maps_s.size());}
    int getXLength() const { return static_cast<int>(m_maps_x.size());}
    int getYLength() const { return static_cast<int>(m_maps_y.size());}
+   double getMaxS() const { return m_maps_s.back(); }
 
+   double sDistance(const double sFrom, const double sTo) const
+   {
+      const double maxS = getMaxS();
+      const double halfMaxS = maxS / 2.0;
+      double sValue = sTo - sFrom;
+
+      if (abs(sValue) > halfMaxS)
+      {
+         if (sValue > 0.0)
+         {
+            sValue = maxS - sValue;
+         }
+         else
+         {
+            sValue = (sValue + maxS) * -1.0;
+         }
+      }
+
+      return sValue;
+   }
+
+   double sNormalize(double sValue) const
+   {
+      const double maxS = getMaxS();
+
+      if (sValue < 0)
+      {
+         sValue = maxS + sValue;
+      }
+      else if (sValue > maxS)
+      {
+         sValue = sValue - maxS;
+      }
+
+      return sValue;
+   }
 
    // Calculate closest waypoint to current x, y position
    size_t getClosestWaypoint(const Coordinate2D & xyCoordinate) const;

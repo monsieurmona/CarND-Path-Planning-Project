@@ -8,7 +8,7 @@ class Prediction
 public:
    void calculate(const CarState & carState, const CarState & targetCarState, const Track & track, const double updateInterval)
    {
-      (void)m_trajetory.calculate(carState, targetCarState, track, updateInterval);
+      (void)m_trajetory.calculateLinearPath(carState, targetCarState, track, updateInterval);
    }
 private:
    // double m_probability;

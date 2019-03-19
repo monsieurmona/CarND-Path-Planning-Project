@@ -11,7 +11,6 @@ public:
    void predict(const Track & track, const CarState & state, const double horizon, const double updateInterval);
 
    CarState getLinearPredictedCarState(const Track & track, const CarState & state, const double horizon);
-   double calcSdYaw(const Track & track, const CarState & state) const;
 
 private:
    std::vector<std::unique_ptr<Prediction>> m_predictions;
