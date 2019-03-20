@@ -2,7 +2,7 @@
 
 #include "Environment.hpp"
 
-void Environment::setEnvironment(const std::vector<std::vector<double>> & sensorFusion, const Track & track, const CarState & egoCarState)
+void Environment::setEnvironment(const std::vector<std::vector<double>> & sensorFusion, const CarState & egoCarState)
 {
    const size_t nCars = sensorFusion.size();
 
@@ -27,18 +27,25 @@ void Environment::setEnvironment(const std::vector<std::vector<double>> & sensor
       addVehicle(id, CarState(x, y, s, d, yaw, v));
    }
 
-   calculateLaneSpeed(track, egoCarState);
-}
+   calculateLaneSpeed(egoCarState);
 
-void Environment::predict(const Track & track, const double_t horizon, const double updateInterval)
-{
-   for (Vehicle & vehicle : m_vehicles)
+   const int laneIdx = m_lane.getLaneIdx(egoCarState.m_carPositionSD.getD());
+
+   if (laneIdx >= 0 || laneIdx < static_cast<int>(m_nLanes))
    {
-      vehicle.predict(track, horizon, updateInterval);
+      m_currentLaneIdx = static_cast<size_t>(laneIdx);
    }
 }
 
-void Environment::calculateLaneSpeed(const Track & track, const CarState & egoCarState)
+void Environment::predict(const double_t horizon, const double updateInterval)
+{
+   for (Vehicle & vehicle : m_vehicles)
+   {
+      vehicle.predict(m_track, horizon, updateInterval);
+   }
+}
+
+void Environment::calculateLaneSpeed(const CarState & egoCarState)
 {
    assert(m_nLanes > 0);
    m_lanesSpeedInMps.resize(static_cast<size_t>(m_nLanes), std::numeric_limits<double>::max());
@@ -46,16 +53,16 @@ void Environment::calculateLaneSpeed(const Track & track, const CarState & egoCa
    for (const Vehicle & vehicle : m_vehicles)
    {
       const Coordinate2D & vehicleSdCoordinates = vehicle.getCarState().m_carPositionSD;
-      const double distance = track.sDistance(egoCarState.m_carPositionSD.getS(), vehicleSdCoordinates.getS());
+      const double distance = m_track.sDistance(egoCarState.m_carPositionSD.getS(), vehicleSdCoordinates.getS());
       if (distance < 0)
       {
          // if a car is behind, we don't want to count it
          continue;
       }
 
-      int laneIdx = m_lane.getLaneIdx(vehicleSdCoordinates.getD());
+      const int laneIdx = m_lane.getLaneIdx(vehicleSdCoordinates.getD());
 
-      if (laneIdx < 0 || laneIdx >= m_nLanes)
+      if (laneIdx < 0 || laneIdx >= static_cast<int>(m_nLanes))
       {
          // car shall be on ego vehicle side
          continue;

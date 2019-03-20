@@ -14,12 +14,11 @@ public:
 
    void predict(const Track & track, const double_t horizon, const double updateInterval)
    {
-      std::cout << "Car id:" << m_id << std::endl;
       m_predictions.predict(track, m_state, horizon, updateInterval);
    }
 
    inline const CarState & getCarState() const { return m_state; }
-   inline const Prediction & getPredictions() const { return m_predictions; }
+   inline const Predictions & getPredictions() const { return m_predictions; }
 
 private:
    int m_id;

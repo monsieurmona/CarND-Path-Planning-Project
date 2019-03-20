@@ -8,8 +8,8 @@
 #include "helpers.h"
 #include "json.hpp"
 
-#include "Trajectory.hpp"
 #include "Environment.hpp"
+#include "PathPlan.hpp"
 
 // for convenience
 using nlohmann::json;
@@ -105,22 +105,17 @@ int main() {
                constexpr double laneWidth = 4.0;
                constexpr double nLanes = 3;
                Lane lane(laneWidth);
-               Track track(lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 
-               Environment environment(nLanes, lane);
-               environment.setEnvironment(sensor_fusion);
-               environment.predict(track, 90.0, updateInterval);
+               Environment environment(nLanes, lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+               environment.setEnvironment(sensor_fusion, carState);
 
-               CarState desiredCarState(
-                        0,
-                        90 + carState.m_carPositionSD.getS(),
-                        CarState::convertMilesPerHourToMetersPerSecond(49.0),
-                        track);
+               PathPlan pathPlan(previous_path_x,
+                                 previous_path_y,
+                                 environment,
+                                 carState,
+                                 updateInterval);
 
-               Trajectory trajectory;
-               trajectory.insertPreviousPath(previous_path_x, previous_path_y);
-               trajectory.calculateLanePath(carState, desiredCarState, track, updateInterval);
-
+               const Trajectory & trajectory = pathPlan.getEgoTrajectory();
                /**
                 * TODO: define a path made up of (x,y) points that the car will visit
                 *   sequentially every .02 seconds

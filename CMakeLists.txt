@@ -19,6 +19,8 @@ set(sources
     src/Environment.hpp
     src/Lane.cpp
     src/Lane.hpp
+    src/PathPlan.cpp
+    src/PathPlan.hpp
     src/Prediction.cpp
     src/Prediction.hpp
     src/Predictions.cpp
