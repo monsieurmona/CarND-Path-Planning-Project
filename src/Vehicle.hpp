@@ -18,6 +18,9 @@ public:
       m_predictions.predict(track, m_state, horizon, updateInterval);
    }
 
+   inline const CarState & getCarState() const { return m_state; }
+   inline const Prediction & getPredictions() const { return m_predictions; }
+
 private:
    int m_id;
    CarState m_state;
