@@ -47,6 +47,8 @@ void Environment::predict(const double_t horizon, const double updateInterval)
 
 void Environment::calculateLaneSpeed(const CarState & egoCarState)
 {
+   const double maxSpeedInMps = CarState::convertMilesPerHourToMetersPerSecond(49.0);
+
    assert(m_nLanes > 0);
    m_lanesSpeedInMps.resize(static_cast<size_t>(m_nLanes), std::numeric_limits<double>::max());
 
@@ -54,6 +56,7 @@ void Environment::calculateLaneSpeed(const CarState & egoCarState)
    {
       const Coordinate2D & vehicleSdCoordinates = vehicle.getCarState().m_carPositionSD;
       const double distance = m_track.sDistance(egoCarState.m_carPositionSD.getS(), vehicleSdCoordinates.getS());
+
       if (distance < 0)
       {
          // if a car is behind, we don't want to count it
@@ -64,12 +67,17 @@ void Environment::calculateLaneSpeed(const CarState & egoCarState)
 
       if (laneIdx < 0 || laneIdx >= static_cast<int>(m_nLanes))
       {
-         // car shall be on ego vehicle side
+         // car shall be on ego vehicle side of the road
          continue;
       }
 
       double & laneSpeedInMps = m_lanesSpeedInMps[static_cast<size_t>(laneIdx)];
-      const double vehicleSpeedInMps = vehicle.getCarState().getSpeedInMetersPerSecond();
+      // const double vehicleSpeedInMps = vehicle.getCarState().getSpeedInMetersPerSecond();
+
+      const double safetyDistance = 5;
+      const double maxPossibleVehicleSpeedInMps = CarState::convertMilesPerHourToMetersPerSecond(
+               distance - safetyDistance);
+      const double vehicleSpeedInMps = maxPossibleVehicleSpeedInMps > maxSpeedInMps ? maxSpeedInMps : maxPossibleVehicleSpeedInMps;
 
       if (laneSpeedInMps > vehicleSpeedInMps)
       {

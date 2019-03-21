@@ -18,9 +18,15 @@ PathPlan::PathPlan(const std::vector<double> & prevXCoordinates,
    const size_t currentLaneIdx = environment.getCurrentLaneIdx();
    const LaneSpeed currentLane(currentLaneIdx, environment.getLanesSpeedInMps()[currentLaneIdx]);
 
+   std::cout << "Lanes";
    for (const LaneSpeed & desiredLane : lanesSpeed)
    {
-      if (!isFasterLane(desiredLane, currentLane, possibleLanes))
+      std::cout << " Speed:" << desiredLane.m_speedInMps << " id:" << desiredLane.m_laneIdx;
+   }
+
+   for (const LaneSpeed & desiredLane : lanesSpeed)
+   {
+      if (!isFasterLane(desiredLane, currentLane, possibleLanes) && desiredLane.m_laneIdx != currentLane.m_laneIdx)
       {
          continue;
       }
@@ -34,6 +40,7 @@ PathPlan::PathPlan(const std::vector<double> & prevXCoordinates,
                desiredSpeed,
                environment.getTrack());
 
+      std::cout << " Desired Speed:" << desiredSpeed << std::endl;
 
       m_egoTrajectory.calculateLanePath(egoCarState, desiredCarState, environment.getTrack(), updateInterval);
       break;
@@ -49,6 +56,8 @@ void PathPlan::getLaneChangeOptions(const Environment & environment, std::vector
    {
       possibleLanes.push_back(currentLaneIdx - 1);
    }
+
+   possibleLanes.push_back(currentLaneIdx);
 
    if (currentLaneIdx + 1 < environment.getLaneCount())
    {
