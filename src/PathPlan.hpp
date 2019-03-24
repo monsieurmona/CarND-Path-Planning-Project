@@ -1,3 +1,7 @@
+/** Author: Mario Lüder
+   * Date: 2019-03-24
+   */
+
 #ifndef PATHPLAN_HPP
 #define PATHPLAN_HPP
 

@@ -1,3 +1,6 @@
+/** Author: Mario Lüder
+ * Date: 2019-03-24
+ */
 #ifndef ENVIRONMENT_HPP
 #define ENVIRONMENT_HPP
 

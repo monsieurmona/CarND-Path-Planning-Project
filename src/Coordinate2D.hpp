@@ -1,3 +1,7 @@
+/** Author: Mario Lüder
+ * Date: 2019-03-24
+ */
+
 #ifndef COORDINATE2D_HPP
 #define COORDINATE2D_HPP
 
