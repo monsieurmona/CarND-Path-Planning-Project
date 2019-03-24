@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <cmath>
 
 #include "Environment.hpp"
@@ -42,14 +43,6 @@ void Environment::setEnvironment(const std::vector<std::vector<double>> & sensor
    {
       ClosestCarsInLane closestCarInLane = getClosestCarsInLane(egoCarState, static_cast<int>(i));
       m_closestCarInLanes.push_back(closestCarInLane);
-   }
-}
-
-void Environment::predict(const double_t horizon, const double updateInterval)
-{
-   for (Vehicle & vehicle : m_vehicles)
-   {
-      vehicle.predict(m_track, horizon, updateInterval);
    }
 }
 

@@ -1,6 +1,7 @@
 #ifndef ENVIRONMENT_HPP
 #define ENVIRONMENT_HPP
 
+#include <limits>
 #include <vector>
 
 #include "Track.hpp"
@@ -34,7 +35,6 @@ public:
    };
 
    void setEnvironment(const std::vector<std::vector<double>> & sensorFusion, const CarState & egoCarState);
-   void predict(const double_t horizon, const double updateInterval);
 
    inline const std::vector<double_t> & getLanesSpeedInMps() const { return m_lanesSpeedInMps; }
    inline size_t getCurrentLaneIdx() const { return m_currentLaneIdx; }

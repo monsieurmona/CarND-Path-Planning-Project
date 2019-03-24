@@ -21,10 +21,6 @@ set(sources
     src/Lane.hpp
     src/PathPlan.cpp
     src/PathPlan.hpp
-    src/Prediction.cpp
-    src/Prediction.hpp
-    src/Predictions.cpp
-    src/Predictions.hpp
     src/TargetSpeed.cpp
     src/TargetSpeed.hpp
     src/Track.cpp
