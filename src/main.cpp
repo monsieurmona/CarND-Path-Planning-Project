@@ -81,7 +81,7 @@ int main() {
                      j[1]["s"],
                      j[1]["d"],
                      deg2rad(j[1]["yaw"]),
-                     j[1]["speed"]);
+                     CarState::convertMilesPerHourToMetersPerSecond(j[1]["speed"]));
 
                double car_s = j[1]["s"];
                double car_d = j[1]["d"];

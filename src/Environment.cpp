@@ -35,6 +35,14 @@ void Environment::setEnvironment(const std::vector<std::vector<double>> & sensor
    {
       m_currentLaneIdx = static_cast<size_t>(laneIdx);
    }
+
+   m_closestCarInLanes.reserve(m_nLanes);
+
+   for (size_t i = 0; i < m_nLanes; ++i)
+   {
+      ClosestCarsInLane closestCarInLane = getClosestCarsInLane(egoCarState, static_cast<int>(i));
+      m_closestCarInLanes.push_back(closestCarInLane);
+   }
 }
 
 void Environment::predict(const double_t horizon, const double updateInterval)
@@ -47,10 +55,9 @@ void Environment::predict(const double_t horizon, const double updateInterval)
 
 void Environment::calculateLaneSpeed(const CarState & egoCarState)
 {
-   const double maxSpeedInMps = CarState::convertMilesPerHourToMetersPerSecond(49.0);
-
    assert(m_nLanes > 0);
-   m_lanesSpeedInMps.resize(static_cast<size_t>(m_nLanes), std::numeric_limits<double>::max());
+   m_lanesSpeedInMps.resize(static_cast<size_t>(m_nLanes), m_maxSpeedInMps);
+   m_nextCarDistance.resize(static_cast<size_t>(m_nLanes), std::numeric_limits<double>::max());
 
    for (const Vehicle & vehicle : m_vehicles)
    {
@@ -71,17 +78,97 @@ void Environment::calculateLaneSpeed(const CarState & egoCarState)
          continue;
       }
 
-      double & laneSpeedInMps = m_lanesSpeedInMps[static_cast<size_t>(laneIdx)];
-      // const double vehicleSpeedInMps = vehicle.getCarState().getSpeedInMetersPerSecond();
+      double & minNextCarDistance = m_nextCarDistance[static_cast<size_t>(laneIdx)];
 
-      const double safetyDistance = 5;
-      const double maxPossibleVehicleSpeedInMps = CarState::convertMilesPerHourToMetersPerSecond(
-               distance - safetyDistance);
-      const double vehicleSpeedInMps = maxPossibleVehicleSpeedInMps > maxSpeedInMps ? maxSpeedInMps : maxPossibleVehicleSpeedInMps;
-
-      if (laneSpeedInMps > vehicleSpeedInMps)
+      if (minNextCarDistance > distance)
       {
-         laneSpeedInMps = vehicleSpeedInMps;
+         minNextCarDistance = distance;
+
+         double & laneSpeedInMps = m_lanesSpeedInMps[static_cast<size_t>(laneIdx)];
+         // const double vehicleSpeedInMps = vehicle.getCarState().getSpeedInMetersPerSecond();
+
+         const double safetyDistance = 5;
+         const double maxPossibleVehicleSpeedInMps = CarState::convertMilesPerHourToMetersPerSecond(
+                  (distance / m_safefyDistanceFactor) - safetyDistance);
+         double vehicleSpeedInMps = maxPossibleVehicleSpeedInMps > m_maxSpeedInMps ? m_maxSpeedInMps : maxPossibleVehicleSpeedInMps;
+
+         if (vehicleSpeedInMps < 0)
+         {
+            vehicleSpeedInMps = 0;
+         }
+
+         if (laneSpeedInMps > vehicleSpeedInMps)
+         {
+            laneSpeedInMps = vehicleSpeedInMps;
+         }
       }
    }
+}
+
+Environment::ClosestCarsInLane Environment::getClosestCarsInLane(const CarState & egoCarPosition, const int laneIdx) const
+{
+   ClosestCarsInLane closestCarsInLane;
+
+   for (const Vehicle & vehicle : m_vehicles)
+   {
+      const Coordinate2D & carPosSD = vehicle.getCarState().m_carPositionSD;
+      const int vehicleLane = m_lane.getLaneIdx(carPosSD.getD());
+
+      if (vehicleLane != laneIdx)
+      {
+         continue;
+      }
+
+      const double distanceToNextCar = m_track.sDistance(
+               egoCarPosition.m_carPositionSD.getS(), carPosSD.getS());
+
+      const double distanceToNextCarAbs = abs(distanceToNextCar);
+
+      DistanceSpeed * distanceSpeed = nullptr;
+
+      if (distanceToNextCar < 0)
+      {
+         distanceSpeed = &closestCarsInLane.m_back;
+      }
+      else
+      {
+         distanceSpeed = &closestCarsInLane.m_front;
+      }
+
+      if (distanceSpeed->m_distanceInM > distanceToNextCarAbs)
+      {
+         distanceSpeed->m_distanceInM = distanceToNextCarAbs;
+         distanceSpeed->m_speedInMps = vehicle.getCarState().getSpeedInMetersPerSecond();
+      }
+   }
+
+   std::cout << "Closest Cars in Lane:" << laneIdx
+             << " | Front Distance:" << closestCarsInLane.m_front.m_distanceInM  << " Speed:" << closestCarsInLane.m_front.m_speedInMps
+             << " | Back Distance:" << closestCarsInLane.m_back.m_distanceInM  << " Speed:" << closestCarsInLane.m_back.m_speedInMps << std::endl;
+
+   return closestCarsInLane;
+}
+
+double Environment::predictLaneSpeed(const CarState & egoCarState, const size_t laneIdx, const double t) const
+{
+   const ClosestCarsInLane & clostestCarsInLane = m_closestCarInLanes[laneIdx];
+
+   const double predictedCarPos = clostestCarsInLane.m_front.m_speedInMps * t + clostestCarsInLane.m_front.m_distanceInM;
+   const double predictedEgoCarPos = egoCarState.getSpeedInMetersPerSecond() * t;
+   const double predictedDistance = predictedCarPos - predictedEgoCarPos;
+
+   double predictedSpeedInMps = CarState::convertMilesPerHourToMetersPerSecond(
+            predictedDistance / m_safefyDistanceFactor);
+
+   if (predictedSpeedInMps > m_maxSpeedInMps)
+   {
+      predictedSpeedInMps = m_maxSpeedInMps;
+   }
+
+   if (predictedSpeedInMps < 0)
+   {
+      predictedSpeedInMps = 0;
+   }
+
+   return  predictedSpeedInMps;
 }

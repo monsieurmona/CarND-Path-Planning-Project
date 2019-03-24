@@ -30,7 +30,8 @@ public:
       , m_speedInMps(desiredSpeedMps)
    {
       const double d = track.getLane().getD(laneIndex);
-      m_carPositionSD.set(s, d);
+      const double normalizedS = track.sNormalize(s);
+      m_carPositionSD.set(normalizedS, d);
       m_carPositionXY = track.convertToSDtoXY(m_carPositionSD);
    }
 

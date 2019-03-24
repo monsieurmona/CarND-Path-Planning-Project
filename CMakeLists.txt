@@ -25,6 +25,8 @@ set(sources
     src/Prediction.hpp
     src/Predictions.cpp
     src/Predictions.hpp
+    src/TargetSpeed.cpp
+    src/TargetSpeed.hpp
     src/Track.cpp
     src/Track.hpp
     src/Trajectory.cpp

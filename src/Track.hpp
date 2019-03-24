@@ -35,11 +35,11 @@ public:
       {
          if (sValue > 0.0)
          {
-            sValue = maxS - sValue;
+            sValue = (maxS - sValue) * -1;
          }
          else
          {
-            sValue = (sValue + maxS) * -1.0;
+            sValue = (sValue + maxS);
          }
       }
 

@@ -5,6 +5,7 @@
 
 #include "CarState.hpp"
 #include "Coordinates2D.hpp"
+#include "TargetSpeed.hpp"
 
 
 namespace NONAME {
@@ -30,7 +31,7 @@ public:
    Trajectory(const Trajectory&&) = delete;
 
    // calculates spline and path points
-   const PathPoints & calculateLanePath(const CarState & carState, const CarState & targetCarState, const Track & track, const double updateInterval);
+   const PathPoints & calculateLanePath(const CarState & carState, const CarState & targetCarState, const TargetSpeed & targetSpeed, const Track & track, const double updateInterval);
    const PathPoints & calculateLinearPath(const CarState & carState, const CarState & targetCarState, const Track & track, const double updateInterval);
 
    // set previous path points before calculation

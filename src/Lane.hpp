@@ -13,7 +13,7 @@ public:
       return m_halfLaneWidth + laneIdx * m_laneWidth;
    }
 
-   inline int getLaneIdx(const double d)
+   inline int getLaneIdx(const double d) const
    {
       return static_cast<int>(floor(d / m_laneWidth));
    }
