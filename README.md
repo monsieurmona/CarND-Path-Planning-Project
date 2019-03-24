@@ -37,11 +37,11 @@ If a car is in front of the desired lane:
 
 t<sub>prediction</sub> = 1s
 
-d<sub>pred_next_car</sub> = v<sub>next_car_in_lane</sub> * t<sub>prediction</sub> + d<sub>next_car</sub>
-d<sub>pred_ego_car</sub> = v<sub>ego</sub> * t<sub>prediction</sub>
-d<sub>pred_diff</sub> = d<sub>pred_next_car</sub> - d<sub>pred_ego_car</sub>
-v<sub>pred_safe</sub> = d<sub>pred_diff</sub> / 1.5s
-v<sub>ego_predicted</sub> = min(v<sub>pred_safe</sub>, v<sub>max</sub>, 0)
+d<sub>pred_next_car</sub> = v<sub>next_car_in_lane</sub> * t<sub>prediction</sub> + d<sub>next_car</sub><br>
+d<sub>pred_ego_car</sub> = v<sub>ego</sub> * t<sub>prediction</sub><br>
+d<sub>pred_diff</sub> = d<sub>pred_next_car</sub> - d<sub>pred_ego_car</sub><br>
+v<sub>pred_safe</sub> = d<sub>pred_diff</sub> / 1.5s<br>
+v<sub>ego_predicted</sub> = min(v<sub>pred_safe</sub>, v<sub>max</sub>, 0)<br>
 
 If no car is there v<sub>ego_predicted</sub> is simply  v<sub>max</sub>.
 
