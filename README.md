@@ -49,7 +49,13 @@ If no car is there v<sub>ego_predicted</sub> is simply  v<sub>max</sub>.
 The trajectory is calculated with the help of a spline. Two points on the the current lane, taken from the end of last prediction and three points on the desired lane are used to draw the curve. The distance to target points is calculated by multiplying the current speed with a factor. The factor 4.8 is selected to avoid too much of lateral acceleration.
 
  Based on this curve and speed v<sub>ego_predicted</sub> the points for the trajectory are computed, while speed is linearly interpolated between the last prediction and  v<sub>ego_predicted</sub>.
-  
+
+### Result
+**Click to to play the youtube video**
+
+[![Udacity Path Planning Project](Screenshot.png)](http://www.youtube.com/watch?v=n3QE2Qfm4JE "Udacity Path Planning Project")
+
+
 ### Simulator
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).  
 
